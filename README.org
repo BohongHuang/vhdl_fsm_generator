@@ -42,7 +42,7 @@
         end if;
       end if;
     end process proc_num_1;
-    
+
     proc_num_2: process(sensor, clock, state_2, reset)
     begin
       if clock'event and clock = '1' then
@@ -127,6 +127,7 @@
         end if;
       end if;
     end process proc_num_2;
+  end main;
 #+END_SRC
 * 端口定义
 对于端口定义：
@@ -161,7 +162,8 @@
   11111
   11001
 #+END_SRC
-然后编译程序并运行：
+然后使用 ~sbt~ 编译程序并运行：
 #+BEGIN_SRC shell
 sbt run
 #+END_SRC
+=res= 目录下的 =result.vhd= 就是程序文件， =diagrams.org= 包含所有状态机使用 [[https://github.com/mermaid-js/mermaid][mermaid]] 代码表示的状态转移图。
