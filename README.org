@@ -1,0 +1,167 @@
+#+TITLE: VHDL 状态机生成器
+通过AST（语法抽象树）从数据集中生成 VHDL 状态机代码和状态转移图，如：
+#+BEGIN_SRC vhdl
+  library ieee;
+  use ieee.std_logic_1164.all;
+
+  entity number_scanner is
+    port(sensor : in std_logic_vector(4 downto 0);
+         clock, reset : in std_logic;
+         result : out std_logic_vector(3 downto 0));
+  end number_scanner;
+
+  architecture main of number_scanner is 
+    type state_type_1 is (s0, s1, s2);
+    signal state_1: state_type_1;
+    type state_type_2 is (s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15);
+    signal state_2: state_type_2;
+  begin
+    proc_num_1: process(sensor, clock, state_1, reset)
+    begin
+      if clock'event and clock = '1' then
+        if reset = '1' then
+          state_1 <= s0;
+          result <= "ZZZZ";
+        else
+          case state_1 is
+            when s0 => case sensor is
+              when "00000" => state_1 <= s1;
+              when others => 
+            end case;
+            when s1 => case sensor is
+              when "11101" => state_1 <= s2;
+              when others => 
+            end case;
+            when s2 => case sensor is
+              when "11111" =>
+                result <= "0001";
+                state_1 <= s0;
+              when others => 
+            end case;
+          end case;
+        end if;
+      end if;
+    end process proc_num_1;
+    
+    proc_num_2: process(sensor, clock, state_2, reset)
+    begin
+      if clock'event and clock = '1' then
+        if reset = '1' then
+          state_2 <= s0;
+          result <= "ZZZZ";
+        else
+          case state_2 is
+            when s0 => case sensor is
+              when "01111" => state_2 <= s1;
+              when others => 
+            end case;
+            when s1 => case sensor is
+              when "01101" => state_2 <= s2;
+              when others => 
+            end case;
+            when s2 => case sensor is
+              when "01100" => state_2 <= s3;
+              when others => 
+            end case;
+            when s3 => case sensor is
+              when "01000" => state_2 <= s4;
+              when "01010" => state_2 <= s10;
+              when others => 
+            end case;
+            when s4 => case sensor is
+              when "01010" => state_2 <= s5;
+              when others => 
+            end case;
+            when s5 => case sensor is
+              when "01110" => state_2 <= s6;
+              when others => 
+            end case;
+            when s6 => case sensor is
+              when "00110" => state_2 <= s7;
+              when others => 
+            end case;
+            when s7 => case sensor is
+              when "01100" => state_2 <= s8;
+              when others => 
+            end case;
+            when s8 => case sensor is
+              when "01101" => state_2 <= s9;
+              when others => 
+            end case;
+            when s9 => case sensor is
+              when "11111" =>
+                result <= "0010";
+                state_2 <= s0;
+              when others => 
+            end case;
+            when s10 => case sensor is
+              when "01110" => state_2 <= s11;
+              when others => 
+            end case;
+            when s11 => case sensor is
+              when "00110" => state_2 <= s12;
+              when others => 
+            end case;
+            when s12 => case sensor is
+              when "01100" => state_2 <= s13;
+              when others => 
+            end case;
+            when s13 => case sensor is
+              when "01101" => state_2 <= s14;
+              when others => 
+            end case;
+            when s14 => case sensor is
+              when "11111" =>
+                result <= "0010";
+                state_2 <= s0;
+              when "01111" => state_2 <= s15;
+              when others => 
+            end case;
+            when s15 => case sensor is
+              when "11111" =>
+                result <= "0010";
+                state_2 <= s0;
+              when others => 
+            end case;
+          end case;
+        end if;
+      end if;
+    end process proc_num_2;
+#+END_SRC
+* 端口定义
+对于端口定义：
+#+BEGIN_SRC vhdl
+  port(sensor : in std_logic_vector(4 downto 0);
+       clock, reset : in std_logic;
+       result : out std_logic_vector(3 downto 0));
+#+END_SRC
+| 端口     | 说明                          |
+|----------+-------------------------------|
+| ~sensor~ | 传感器输入                    |
+| ~clock~  | 时钟输入                      |
+| ~reset~  | 复位信号输入（高电平有效）    |
+| ~result~ | 结果输出（状态机编号的BCD码） |
+* 使用方法
+将数据放入项目根目录的 =res= 目录下，如：
+#+BEGIN_SRC text
+  res
+  ├── 1
+  │   └── 1.txt
+  ├── 2
+  │   ├── 1.txt
+  │   ├── 2.txt
+  │   └── 3.txt
+  └── 3
+      ├── 1.txt
+      └── 2.txt
+#+END_SRC
+=res= 目录下的文件夹名称是状态机的编号， =n.txt= 包含该状态机到达最终状态接受的序列：
+#+BEGIN_SRC text
+  10001
+  11111
+  11001
+#+END_SRC
+然后编译程序并运行：
+#+BEGIN_SRC shell
+sbt run
+#+END_SRC

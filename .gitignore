@@ -1,0 +1,9 @@
+*.bak
+res
+.gradle
+.bloop
+.metals
+build
+target
+.vscode
+project
